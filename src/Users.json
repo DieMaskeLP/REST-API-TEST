@@ -1,0 +1,20 @@
+[
+    {
+        "id": 0,
+        "username": "McEs-Kid",
+        "password": "encoded",
+        "birth-date": "bla"
+    },
+    {
+        "id": 1,
+        "username": "12345",
+        "password": "encoded",
+        "birth-date": "bla"
+    },
+    {
+        "id": 2,
+        "username": "Kuhler Junge",
+        "password": "encoded",
+        "birth-date": "bla"
+    }
+]
