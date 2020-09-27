@@ -1,6 +1,41 @@
 const fs = require("fs")
-const app = require("express")()
+const express = require("express")
+const app = express()
 const db = JSON.parse(fs.readFileSync("Users.json").toString())
+const crypto = require('crypto');
+let algorithm = 'aes-256-cbc';
+
+function generateKeyIV(){
+    return {
+        "key": crypto.randomBytes(32),
+        "iv": crypto.randomBytes(16)
+    }
+}
+
+function generateID(){
+    let id = ""
+    for (let i = 0; i < 6; i++) {
+        id += Math.floor(Math.random() * (Math.floor(9)-Math.ceil(0)))
+    }
+    return !checkJSONDB(id, "id", false) ? id : generateID()
+}
+
+function encrypt(text, key, iv) {
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString('hex')
+}
+
+function decrypt(text, key, iv) {
+    iv = Buffer.from(iv, 'hex');
+    let encryptedText = Buffer.from(text, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
 
 let gets = [
     {
@@ -8,7 +43,7 @@ let gets = [
         "func": function (req, res, next){
             let result = ""
             for (let i = 0; i < gets.length; i++) {
-                result += `<a href='${gets[i].page}'>${gets[i].page}</a>`
+                result += `<a style="background-color: #999999; border: grey 3px solid; display: block; text-align: center; color: aqua; border-radius: 12px" href='${gets[i].page}'>${gets[i].page}</a>`
             }
             res.send(result)
         }
@@ -37,11 +72,21 @@ class RequestsHelper {
     registerModules(){
         for (let i = 0; i < gets.length; i++) {
             app.get(gets[i].page, function (req, res, next){
+                console.info({
+                    "REQUEST": "GET",
+                    "URL": req.url,
+                    "CLIENT": req.ip
+                })
                 gets[i].func(req, res, next)
             })
         }
         for (let i = 0; i < posts.length; i++) {
             app.post(posts[i].page, function (req, res, next){
+                console.info({
+                    "REQUEST": "POST",
+                    "URL": req.url,
+                    "CLIENT": req.ip
+                })
                 posts[i].func(req, res, next)
             })
         }
@@ -90,13 +135,6 @@ rh.add("/api/usr", function (req, res, next) {
 
         let result = checkJSONDB(searchQuery.searchValue, searchQuery.type, (!searchQuery.searchValue))
 
-        console.log({
-            "request": "GET",
-            "URL": req.url,
-            "searchQuery": searchQuery,
-            "result": result
-        })
-
         if (result){
             res.json({
                 status: "200",
@@ -128,13 +166,6 @@ rh.addPost("/api/usr", function (req, res, next){
         }
 
         let result = checkJSONDB(searchQuery.searchValue, searchQuery.type, (!searchQuery.searchValue))
-
-        console.log({
-            "request": "POST",
-            "URL": req.url,
-            "searchQuery": searchQuery,
-            "result": result
-        })
 
         if (result){
             res.json({
@@ -183,4 +214,4 @@ function sendNotAuth(res, message){
     })
 }
 
-rh.startListening(4556)
+rh.startListening(4444)
