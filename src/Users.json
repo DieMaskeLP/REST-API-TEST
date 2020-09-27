@@ -1,20 +1,14 @@
 [
     {
         "id": 0,
-        "username": "McEs-Kid",
-        "password": "encoded",
-        "birth-date": "bla"
+        "username": "Frederic",
+        "password": "PASSWORD",
+        "Authorization": "1234"
     },
     {
         "id": 1,
-        "username": "12345",
-        "password": "encoded",
-        "birth-date": "bla"
-    },
-    {
-        "id": 2,
-        "username": "Kuhler Junge",
-        "password": "encoded",
-        "birth-date": "bla"
+        "username": "Dummes Kid",
+        "password": "PASSWORD",
+        "Authorization": "4646trestesv6ctw34vq43vtz"
     }
 ]
