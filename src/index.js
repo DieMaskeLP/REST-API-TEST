@@ -237,8 +237,7 @@ rh.addPost("/api/usr", function (req, res, next){
             switch (auth["authorization-level"]){
                 case API_LEVELS["FULL-API"]:
                     if (data["username"] !== undefined || data["email"] !== undefined && data["password"] !== undefined){
-                        let credentials = generateKeyIV();
-                        let newUser =
+                        let newUser = createUser(data)
 
                         res.json({
                             "status": 200,
@@ -293,10 +292,9 @@ function sendNotAuth(res, message){
     })
 }
 
+
+//start SERVER and DB
+
 updateDB()
-
-
 writeDB()
-
-
 rh.startListening(4556)
