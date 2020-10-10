@@ -21,7 +21,7 @@ function generateKeyIV(){
 
 function generateAuthorizationKey(){
     let key = crypto.randomBytes(18).toString("hex")
-    return !checkJSONDB(key, "Authorization", false) ? key : generateAuthorizationKey()
+    return checkJSONDB(key, "Authorization", false).length === 0 ? key : generateAuthorizationKey()
 }
 
 function generateID(){
@@ -29,7 +29,11 @@ function generateID(){
     for (let i = 0; i < 6; i++) {
         id += Math.floor(Math.random() * (Math.floor(9)-Math.ceil(0)))
     }
-    return !checkJSONDB(id, "id", false)[0] ? id : generateID()
+    return checkJSONDB(id, "id", false).length === 0 ? id : generateID()
+}
+
+function checkEmailExists(email){
+    return checkJSONDB(email, "email", false).length === 0
 }
 
 function encrypt(text, key, iv) {
@@ -42,7 +46,7 @@ function encrypt(text, key, iv) {
 function decrypt(text, key, iv) {
     iv = Buffer.from(iv, 'hex');
     let encryptedText = Buffer.from(text, 'hex');
-    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), Buffer.from(iv, "utf-8"));
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, "hex"), Buffer.from(iv, "hex"));
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
@@ -57,11 +61,14 @@ function updateDB(){
 }
 
 function decryptPassword(credentials){
-    return decrypt(credentials["password"], Buffer.from(credentials["key"], "hex"), Buffer.from(credentials["iv"], "hex"))
+    return decrypt(credentials["password"], credentials["key"], credentials["iv"])
 }
 
 function createUser(data){
     let credentials = generateKeyIV()
+    console.log(credentials.iv)
+    console.log(credentials.iv.toString("hex"))
+    console.log(Buffer.from(credentials.iv.toString("hex"), "hex"))
     return {
         "authorization-level": "0", //Standard Auth Level,
         "Authorization": generateAuthorizationKey(),
@@ -181,15 +188,36 @@ function isAuth(req){
         }
     }
 
-    let dbEntry = checkJSONDB(req.headers.authorization, "Authorization")[0]
+    let dbEntry = checkJSONDB(req.headers.authorization, "Authorization")
+
+    if (dbEntry.length > 0){
+        dbEntry = dbEntry[0]
+    } else {
+
+        return {
+            "isAuth": false,
+            "authorization-level": "0"
+        }
+    }
+
     return {
-        "isAuth": dbEntry !== undefined,
+        "isAuth": dbEntry,
         "authorization-level": (dbEntry === undefined ? "0" : dbEntry["authorization-level"])
     }
 }
 
-let rh = new RequestsHelper()
+let rh = new RequestsHelper
 
+function getPositionDB(searchValue, type){
+    let result = []
+    for (let i = 0; i < db.length; i++) {
+        if (searchValue == db[i][type] || db[i]["public-data"][type] == searchValue){
+            result.push(i)}
+
+    }
+    return result
+
+}
 
 function checkJSONDB(searchValue, type, forceFalse){
     let result = []
@@ -215,7 +243,6 @@ rh.addGet("/api/usr", function (req, res, next) {
         }
 
         let result = checkJSONDB(searchQuery.searchValue, searchQuery.type, (!searchQuery.searchValue))
-
 
 
         if (result){
@@ -276,6 +303,18 @@ rh.addPost("/api/usr", function (req, res, next){
             switch (auth["authorization-level"]){
                 case API_LEVELS["FULL-API"]:
                     if (data["username"] !== undefined || data["email"] !== undefined && data["password"] !== undefined){
+
+                        if (data["email"] !== undefined){
+                            if (checkEmailExists(data["email"])){
+                                res.json({
+                                    "status": "404",
+                                    "message": "Email Address already in use",
+                                    "error": "ADDRESS_ALREADY_IN_USE"
+                                })
+                                return
+                            }
+                        }
+
                         let newUser = createUser(data)
 
                         res.json({
@@ -330,8 +369,12 @@ rh.addGet("/api/login", function (req, res, next){
 
             let data = req.headers["data"]
 
-            if (data !== undefined){
+            if (data !== []){
                 let result
+
+                if (data.startsWith("\"")){
+                    data.slice(1, -1)
+                }
                 data = JSON.parse(data)
                 if (data["password"] === undefined){
                     res.json({
@@ -347,10 +390,30 @@ rh.addGet("/api/login", function (req, res, next){
                     return
                 }
 
-                if (data["username"] !== undefined){
-                    result = checkJSONDB(data["email"], "email")[0]
-                } else if (data["email"] !== undefined){
-                    result = checkJSONDB(data["username"], "username")[0]
+                if (data["email"] !== undefined){
+                    result = checkJSONDB(data["email"], "email")
+                    if (result.length > 0){
+                        result = result[0]
+                    } else {
+                        res.json({
+                            "status": "401",
+                            "message": "Login credentials not correct",
+                            "error": "LOGIN_CREDENTIALS_WRONG"
+                        })
+                        return;
+                    }
+                } else if (data["username"] !== undefined){
+                    result = checkJSONDB(data["username"], "username")
+                    if (result.length > 0){
+                        result = result[0]
+                    } else {
+                        res.json({
+                            "status": "401",
+                            "message": "Login credentials not correct",
+                            "error": "LOGIN_CREDENTIALS_WRONG"
+                        })
+                        return;
+                    }
                 } else {
                     res.json({
                         "status": "404",
@@ -365,13 +428,13 @@ rh.addGet("/api/login", function (req, res, next){
                 }
 
 
-                if (result){
+                if (result !== []){
 
                     if (data["password"] === decryptPassword({"key": result["credentials"]["key"], "iv": result["credentials"]["iv"], "password": result["credentials"]["password"]})) {
 
                     } else {
                         res.json({
-                            "status": "401",
+                            "status": "200",
                             "message": "Login successful"
                         })
                     }
@@ -407,18 +470,28 @@ rh.addPut("/api/usr", function (req, res, nex){
         if (id){
 
             let data = req.headers["data"]
+            let result = checkJSONDB("id", id)
 
-            if (data !== undefined){
+            if (result === []){
+                res.json({
+                    "status": "404",
+                    "error": "USER_NOT_FOUND",
+                    "message": "User could not find to id",
+                    "arguments": req.query
+                })
+                return;
+            }
+
+            if (data === undefined){
                 res.json({
                     "status": "404",
                     "error": "DATA_NOT_FOUND",
                     "message": "Header 'data' could not be founded"
                 })
+                return
             }
 
             if (auth["authorization-level"] === API_LEVELS["FULL-API"]){
-
-
 
 
 
