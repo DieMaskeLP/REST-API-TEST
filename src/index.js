@@ -1,7 +1,9 @@
 const fs = require("fs")
-const app = require("express")()
+const express = require("express")
+const app = express()
 let db = []
 
+const DiscordBot = require("C:\\Users\\Fred\\WebstormProjects\\rank-dc-bot\\bot.js")
 
 const API_LEVELS = {
     "FULL-API": "2",
@@ -9,6 +11,9 @@ const API_LEVELS = {
     "undefined": "0"
 }
 
+
+app.use(express.json({extended: false}))
+app.use(express.urlencoded({ extended: true }))
 
 const crypto = require('crypto');
 
@@ -534,8 +539,67 @@ rh.addDelete("/api/usr", function (req, res, next){
 
 })
 
+
+rh.addPost("/5ivesouls/games", function (req, res, next){
+    let auth = isAuth(req)
+    if (auth["isAuth"]){
+        let query = req.headers
+        let game = JSON.parse(query["game"])
+        if (game !== undefined) {
+            if (game["uid"] === undefined || game["uid"] === null){
+                game["uid"] = DiscordBot.generateUID()
+            }
+        } else {
+            res.status(404).send()
+            return
+        }
+        DiscordBot.postGame(game).then((game) => {
+            res.status(200).json(game.getGameAsJSONString())
+        })
+    } else {
+        sendNotAuth(res)
+    }
+})
+
+
+rh.addGet("/5ivesouls/games", function (req, res, next){
+    let auth = isAuth(req)
+
+    if (auth["isAuth"]){
+
+        let headers = req.headers
+        let uid = headers["uid"]
+        if (uid === undefined){
+            res.status(404).json({
+                "error": "Game-ID not found"
+            })
+            return
+        }
+
+        if (!DiscordBot.existsGameID(uid)){
+            res.status(404).json({"error": "Game-ID does not exists"})
+            return;
+        }
+
+        let game = new DiscordBot.GameManager(uid).getGameAsJSONString()
+        res.json(game)
+
+    } else {
+        sendNotAuth(res)
+    }
+
+
+})
+
 //start SERVER and DB
 
 updateDB()
 writeDB()
+
+
+DiscordBot.login().then(() => {
+
+})
+
+
 rh.startListening(4556)

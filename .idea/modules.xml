@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/REST-API-TEST.iml" filepath="$PROJECT_DIR$/.idea/REST-API-TEST.iml" />
+      <module fileurl="file://$USER_HOME$/WebstormProjects/rank-dc-bot/.idea/rank-dc-bot.iml" filepath="$USER_HOME$/WebstormProjects/rank-dc-bot/.idea/rank-dc-bot.iml" />
     </modules>
   </component>
 </project>
