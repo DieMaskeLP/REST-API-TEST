@@ -20,17 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="177afede-0e99-4ed4-b8bb-c6f5a2c69672" name="Default Changelist" comment="Update">
-      <change beforePath="$USER_HOME$/WebstormProjects/rank-dc-bot/.idea/workspace.xml" beforeDir="false" afterPath="$USER_HOME$/WebstormProjects/rank-dc-bot/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$USER_HOME$/WebstormProjects/rank-dc-bot/bot.js" beforeDir="false" afterPath="$USER_HOME$/WebstormProjects/rank-dc-bot/bot.js" afterDir="false" />
-      <change beforePath="$USER_HOME$/WebstormProjects/rank-dc-bot/bot1.js" beforeDir="false" />
       <change beforePath="$USER_HOME$/WebstormProjects/rank-dc-bot/match_history.json" beforeDir="false" afterPath="$USER_HOME$/WebstormProjects/rank-dc-bot/match_history.json" afterDir="false" />
-      <change beforePath="$USER_HOME$/WebstormProjects/rank-dc-bot/user.json" beforeDir="false" afterPath="$USER_HOME$/WebstormProjects/rank-dc-bot/user.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/REST-API-TEST.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/REST-API-TEST.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Users.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/Users.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -171,7 +164,9 @@
       <workItem from="1616783204563" duration="1228000" />
       <workItem from="1616785750583" duration="763000" />
       <workItem from="1616790317689" duration="2010000" />
-      <workItem from="1616853591570" duration="113000" />
+      <workItem from="1616853591570" duration="266000" />
+      <workItem from="1616857765663" duration="1078000" />
+      <workItem from="1616925811251" duration="33000" />
     </task>
     <task id="LOCAL-00001" summary="Update">
       <created>1601388090956</created>
@@ -208,7 +203,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602317043544</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Update">
+      <created>1616853715244</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1616853715244</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

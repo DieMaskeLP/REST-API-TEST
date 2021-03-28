@@ -2,7 +2,7 @@ const fs = require("fs")
 const express = require("express")
 const app = express()
 let db = []
-
+const fetch = require("node-fetch")
 const DiscordBot = require("C:\\Users\\Fred\\WebstormProjects\\rank-dc-bot\\bot.js")
 
 const API_LEVELS = {

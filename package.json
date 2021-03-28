@@ -11,9 +11,12 @@
     "debug": "~2.6.9",
     "discord.js": "^12.5.1",
     "express": "~4.16.1",
+    "fetch": "^1.1.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
+    "node-fetch": "^2.6.1",
     "opus": "0.0.0",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "request": "^2.88.2"
   }
 }
